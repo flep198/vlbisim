@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: vlbisim
+Version: 0.1.0
+Summary: A simple simulator for VLBI
+Author-email: Your Name <you@example.com>
+License-Expression: MIT
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas
+Requires-Dist: matplotlib
+Requires-Dist: numpy
+Requires-Dist: astropy
+Requires-Dist: numba
+Requires-Dist: celluloid
+Requires-Dist: basemap
+Dynamic: license-file
+
+# vlbisim
+A simple simulator for VLBI.
+
