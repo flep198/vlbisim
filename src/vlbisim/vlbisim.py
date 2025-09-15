@@ -130,7 +130,7 @@ def fitBeam(data):
     return g
 
 def simulateUV(telescopes,
-               source,output_name="uvout.mp4", #output filepath for movie
+               source,output_name="uvout.mp4", #output filepath for 
                make_movie=False, #decide whether to create movie
                n_iter=200, #number of iterations
                make_plot=False, #decide whether to plot source
@@ -143,11 +143,12 @@ def simulateUV(telescopes,
               imgSize=512, #pixelsize of image
                wavelength=1, #highly experimental still! only experts should use it!
               plotLim=15000, #plotLim in kilometer
+              do_world_map=False, #decide whether to show world map or not
+              image_input=False, #input custom image              
               ):
     r_e=6731 #Earth Radius in Kilometers
     
     plotLim=plotLim/wavelength #max plot length of baselines
-    do_world_map=False #decide whether to show world map or not
 
     #create real image 
     real_image=np.zeros((imgSize,imgSize))
@@ -167,11 +168,10 @@ def simulateUV(telescopes,
         return gray
     
 
-    #img_import = mpimg.imread('../blackhole.png')
-    #real_image = rgb2gray(img_import)
-    #plt.imshow(real_image)
-    #plt.show()
-
+    if image_input:
+        img_import = mpimg.imread(image_input)
+        real_image = rgb2gray(img_import)
+    
 
     real_image_fft=np.fft.fftshift(np.fft.fft2(real_image))
     #plt.imshow(np.abs(real_image_fft))
@@ -322,13 +322,13 @@ def simulateUV(telescopes,
 
                         u_v_grid[y_ind][x_ind]=1
 
-                        if make_plot or make_movie: 
-                            #plot current status of uv_tracks
-                            u_plot=u_v_tracks[baseline_count][0]
-                            v_plot=u_v_tracks[baseline_count][1]
-                            ax = plt.subplot(gs_uv)
-                            plt.scatter(u_plot,v_plot,c=get_color(baseline_count),s=1)
-                            plt.scatter(-np.array(u_plot),-np.array(v_plot),c=get_color(baseline_count),s=1)
+                    if make_plot or make_movie: 
+                        #plot current status of uv_tracks
+                        u_plot=u_v_tracks[baseline_count][0]
+                        v_plot=u_v_tracks[baseline_count][1]
+                        ax = plt.subplot(gs_uv)
+                        plt.scatter(u_plot,v_plot,c=get_color(baseline_count),s=1)
+                        plt.scatter(-np.array(u_plot),-np.array(v_plot),c=get_color(baseline_count),s=1)
                             
                     baseline_count+=1
         
@@ -369,13 +369,11 @@ def simulateUV(telescopes,
         ax=plt.subplot(gs_world,projection="aitoff")
         plt.grid(True)
 
-    #anim=FuncAnimation(fig, animate, frames=n_iter, repeat=False,cache_frame_data=False)
-    #anim.save('uvcover.mp4', writer = 'ffmpeg', fps = 4)
-
     uptime=[[] for _ in range(len(telescopes))]
     for i in range(n_iter):
         if make_plot or make_movie:
             u_v_tracks,dirty_image=animate(i,u_v_tracks)
+            camera.snap()
         else:
             u_v_tracks=animate(i,u_v_tracks)
         
@@ -383,7 +381,7 @@ def simulateUV(telescopes,
         plt.show()
 
     if make_movie:
-        anim = camera.animate(blit=True)
+        anim = camera.animate(blit=False)
         anim.save(output_name, writer='ffmpeg')
     
     if make_plot:
